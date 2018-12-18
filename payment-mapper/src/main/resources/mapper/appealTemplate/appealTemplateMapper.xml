@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.firesoon.paymentmapper.appealTemplate.AppealTemplateMapper">
+    <select id="findAppealTemplate" resultType="map" parameterType="map">
+         select * from ida.ida_appealtemplate_config 
+         <where>
+	         <if test="rulename != null and rulename !='' ">
+		          and rule_name = #{rulename}
+		     </if>
+		     <if test="itemname != null and itemname !='' ">
+		          and item_name = #{itemname}
+		     </if>
+		     <if test="itemcode != null and itemcode !='' ">
+		          and item_code = #{itemcode}
+		     </if>
+	      </where>
+    </select>
+    <select id="insertAppealTemplate" parameterType="map">
+         insert into ida.ida_appealtemplate_config values (sys_guid(),#{rulename},#{itemcode},#{itemname},#{template})
+    </select>
+    <select id="updateAppealTemplate" parameterType="map">
+         update ida.ida_appealtemplate_config set rule_name = #{rulename},item_code = #{itemcode},item_name = #{itemname},template = #{template}
+         where id = #{id}
+    </select>
+    <select id="deleteAppealTemplate" parameterType="map">
+         delete from ida.ida_appealtemplate_config where id = #{id}
+    </select>
+</mapper>

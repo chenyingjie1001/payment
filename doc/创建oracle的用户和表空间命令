@@ -1,0 +1,58 @@
+--创建fms用户
+create user ida identified by ida;
+
+--创建HDC_fms表空间
+	--'/opt/oracle/oradata/hdctest/'--更改为当前系统的表空间地址
+		查询当前用户的表空间：
+			select username,default_tablespace from dba_users
+		查询表空间地址及大小：
+			SELECT tablespace_name,
+			file_id,
+			file_name,
+			round(bytes / (1024 * 1024), 0) total_space
+			FROM dba_data_files
+			ORDER BY tablespace_name;
+
+	create tablespace hdc_ida datafile '/opt/oracle/oradata/hdctest/hdc_ida.dbf' size 1024M;
+
+--更改fms用户表空间到 hdc_fms
+	alter user ida default tablespace hdc_ida;
+
+--赋权
+	grant create session,create table,create view,create sequence,unlimited tablespace to ida;
+	grant dba to ida;
+	--慎用
+	grant all privileges to ida
+	grant connect,resource,dba to ida;
+	grant all privileges to model;
+      grant connect,resource,dba to model;
+-- 如果需要存储过程睡眠的
+GRANT EXECUTE ON SYS.DBMS_LOCK TO model
+
+
+insert into PORTAL.BASE_APPLICATION (ID, APP_NAME, APP_CODE, APP_TYPE, APP_URL, PARENT_ID, DORDER, IS_LEAF, LEVEL_NUM, CREATE_USER, CREATE_TIME, CLASS_NAME)
+values (31, '扣款助手', 'ida', '2', '/dataapps/ida', 0, 13, null, null, null, null, 'app-ida');
+commit;
+
+insert into PORTAL.BASE_APPLICATION_VERSION (ID, APP_NAME, APP_CODE, VERSION, REMARKS, UPDATETIME)
+values (22, '智能扣款助手', 'ida', '1.0.0', null, to_date('03-12-2018', 'dd-mm-yyyy'));
+commit;
+
+create or replace procedure model.P_getDept
+(p_month varchar2
+) is
+begin
+  update ida.ida_chargebill_detail t set t.department_name = '皮肤科', t.deducteproject = '项目核算科室' where t.month =  p_month;
+end P_getDept;
+
+
+create or replace procedure ida.P_cory_test
+is
+num number;
+begin
+    select count(1) into num from user_tables where table_name = upper('ida_chargebill_detail_test') ;
+    if num > 0 then
+        execute immediate 'drop table ida_chargebill_detail_test' ;
+    end if;
+    execute immediate 'create table ida_chargebill_detail_test as select * from ida_chargebill_detail';
+end P_cory_test;

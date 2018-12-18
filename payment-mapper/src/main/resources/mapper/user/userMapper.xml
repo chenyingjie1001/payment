@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.firesoon.paymentmapper.user.UserMapper">
+    <select id="find" resultType="User">
+
+        select * from portal.base_user
+        <where>
+            <if test="login_name != null">
+                login_name = #{login_name}
+            </if>
+        </where>
+    </select>
+
+    <select id="findUserByLogin" resultType="User">
+        select * from portal.base_user t where t.login_name = #{login_name}
+    </select>
+
+    <select id="findApplicationVersion" resultType="map">
+        select version "version" from PORTAL.BASE_APPLICATION_VERSION where app_code = 'ida'
+    </select>
+
+    <select id="dataPermisResources" resultType="map">
+        select id, t.groupname, groupcode, t.appname, t.module, t.dimensiontable, t.dimensionsign
+        from portal.base_datapermisresources t
+        where t.groupcode = 'A008' and t.appname = 'ALL' and t.module = 'M0' and t.status = 1
+
+    </select>
+    <select id="userDataPermissions" resultType="map">
+        select id, userid, datapermisresid, permissions
+        from portal.base_userdatapermissions
+        where userid = #{userid} and datapermisresid = #{datapermisresid}
+    </select>
+    <select id="masterDept" resultType="map">
+        select distinct id, ksdmstr deptcode, ksmc deptname, attribute
+        from portal.master_dept
+        where status = 1
+        <if test="list != null and list.size>0">
+            and id in (
+                <foreach collection="list" item="item" separator=",">
+                    #{item.id}
+                </foreach>
+            )
+        </if>
+    </select>
+    <select id="bussessDept" resultType="map">
+        SELECT distinct deptcode, deptname
+        FROM portal.business_dept_info
+        START WITH deptcode in (select deptcode from portal.business_dept_info
+        where status = 1
+        <if test="list != null and list.size > 0">
+            and id in (select t.source_id from portal.master_ref_v2 t where master_id in (
+            <foreach collection="list" item="item" separator=",">
+                <choose>
+                    <when test="item.id != null">
+                        #{item.id}
+                    </when>
+                    <otherwise>
+                        #{item.ID}
+                    </otherwise>
+                </choose>
+            </foreach>
+            ))
+        </if>
+        )
+        CONNECT BY parentdeptcode = PRIOR deptcode
+    </select>
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.firesoon.paymentmapper.importRecord.ImportRecordMapper">
+    <select id="findImportRecord" resultType="map" parameterType="map">
+             select id,month,file_address,import_username,to_char(import_time,'yyyy-MM-dd hh24:mi') import_time from ida.ida_import_record
+         <where>
+             <if test="month != null and month !='' ">
+	              and month = #{month}   
+	         </if>
+          </where>
+             order by month desc
+    </select>
+    <select id="insertImportRecord" parameterType="map">
+         insert into ida.ida_import_record(id,month,file_address,import_username,import_time) values
+         (#{id},#{time},#{fileaddress},#{username},#{importtime})
+         insert into ida_import_record values (
+         sys_guid(), #{month}, #{filename}, #{username}, sysdate
+         )
+    </select>
+    <select id="deleteImportRecord" parameterType="map">
+         delete from ida.ida_import_record where month = #{month}
+    </select>
+    <select id="findAllAddress" resultType="map" parameterType="map">
+         select file_address from ida.ida_import_record
+         where month = #{month}
+    </select>
+</mapper>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.firesoon.paymentmapper.chargeBill.ChargeBillMapper">
+    <select id="findChargeBill" resultType="map" parameterType="map">
+             select id,month,substr(name,0,INSTR(name,'.xls', 1, 1)-1) name,import_username,to_char(import_time,'yyyy-MM-dd hh24:mi') import_time,remark from ida_charge_bill t 
+         <where>
+             <if test="month != null and month !='' ">
+	              and t.month = #{month}   
+	         </if>
+          </where>
+             order by t.month desc
+    </select>
+    <select id="insertChargeBill" parameterType="map">
+         insert into ida.ida_charge_bill
+         (id,month,name,import_username,import_time,remark) values
+         (sys_guid(),#{month},#{name},#{username},sysdate,#{remark})
+    </select>
+    <select id="updateChargeBill" parameterType="map">
+         update ida.ida_charge_bill set name = #{filename},import_username = #{username},import_time = sysdate,remark = #{bak}
+         where month = #{month}
+    </select>
+    <select id="deleteChargeBill" parameterType="map">
+         delete from ida.ida_charge_bill where month = #{month}
+    </select>
+    <select id="countChargeBill" resultType="map" parameterType="map">
+         select count(*) num from ida.ida_charge_bill where month = #{month}
+    </select>
+</mapper>

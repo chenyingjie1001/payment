@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.firesoon.paymentmapper.chargeBillDetail.ChargeBillDetailMapper">
+
+     <select id="findChargeBillDetail" resultType="map" parameterType="map">
+             select * from ida.ida_chargebill_detail
+         <where>
+             <if test="科室 != null and 科室.size > 0">
+                 AND deductedept IN
+                <foreach item="deptName" index="index" collection="科室" open="(" separator="," close=")">
+                   #{deptName}
+                </foreach>
+             </if>
+             <if test="month != null and month !='' ">
+	              and month = #{month}
+	         </if>
+	         <if test="iswrite != null and iswrite !='' ">
+	              and iswrite = #{iswrite}
+	         </if>
+	         <if test="chargeDepartments != null and chargeDepartments.size > 0 ">
+		          and deductedept in
+		          <foreach collection="chargeDepartments" index="index" item="item" open="(" separator="," close=")">
+		              ${item}
+		          </foreach>
+	         </if>
+	         <if test="isappeal != null and isappeal.size > 0 ">
+		          and isappeal in
+		          <foreach collection="isappeal" index="index" item="item" open="(" separator="," close=")">
+		              ${item}
+		          </foreach>
+	         </if>
+	         <if test="itemname != null and itemname.size > 0 ">
+		          and deducteproject in
+		          <foreach collection="itemname" index="index" item="item" open="(" separator="," close=")">
+		              ${item}
+		          </foreach>
+	         </if>
+          </where>
+             order by createdate desc
+    </select>
+    <select id="deleteChargeBillDetail" resultType="map" parameterType="map">
+          delete from ida.ida_chargebill_detail where month = #{month}
+    </select>
+    <select id="getAllChargeDepartment" resultType="map" parameterType="map">
+           select distinct(deductedept) from ida.ida_chargebill_detail  
+           <where>
+               month = #{month} and deductedept is not null  
+	           <if test="科室 != null and 科室.size > 0">
+	                and deductedept IN
+	                <foreach item="deptName" index="index" collection="科室" open="(" separator="," close=")">
+	                    #{deptName}
+	                </foreach>
+	           </if>
+           </where>
+    </select>
+    <select id="getAllChargeItem" resultType="map" parameterType="map">
+          select distinct(deducteproject) from ida.ida_chargebill_detail where month = #{month} and deducteproject is not null  
+    </select>
+    <select id="updateDepartment" resultType="map" parameterType="map">
+          update ida.ida_chargebill_detail set deductedept = #{department} where id = #{id}
+    </select>
+    <select id="updateWrite" resultType="map" parameterType="map">
+          update ida.ida_chargebill_detail set appealstr = #{appealtext}, appealuser = #{username},appealimg = #{appealimg},appealdate = sysdate,iswrite=1
+          where id = #{id}
+    </select>
+    <select id="getExcelTable" resultType="map">
+          select name COLUMN_NAME,fieldname COLUMN_CODE,type DATA_TYPE from ida.ida_view order by to_number(sort)
+    </select>
+    <select id="getAppealMessage" resultType="map" parameterType="map">
+          select id, appealstr,appealimg,to_char(appealdate,'yyyy-MM-dd hh24:mi') appealdate ,appealuser,item_name,charge_reason,hospitalization_no,insureperson_name 
+          from ida.ida_chargebill_detail where id = #{id}
+    </select>
+    <select id="getSectionLevelMonth" resultType="map" parameterType="map">
+         select month levelmonth from ida_charge_bill order by month desc 
+    </select>
+    <select id="getAllDepartmentConfig" resultType="map">
+         select * from ida_department_config 
+    </select>
+    <select id="getAllAppealConfig" resultType="map"  parameterType="map">
+         select * from ida_appealtemplate_config 
+         <where>
+	         <if test="rulename != null and rulename !='' ">
+		          and rule_name = #{rulename}
+		     </if>
+		     <if test="itemname != null and itemname !='' ">
+		          and item_name = #{itemname}
+		     </if>
+		     <if test="itemcode != null and itemcode !='' ">
+		          and item_code = #{itemcode}
+		     </if>
+	      </where>
+    </select>
+</mapper>

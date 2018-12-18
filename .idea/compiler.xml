@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="ida-service" />
+        <module name="ida-web" />
+        <module name="idadto" />
+        <module name="payment-mapper" />
+        <module name="paymentcommonconfigs" />
+        <module name="paymentcommonutils" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="cdn" target="1.5" />
+      <module name="demo111111" target="1.8" />
+      <module name="idamapperx" target="1.5" />
+      <module name="idaservicex" target="1.5" />
+      <module name="payment-service" target="1.8" />
+      <module name="payment-web" target="1.8" />
+      <module name="paymentservice" target="1.5" />
+      <module name="paymentweb" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.firesoon.paymentmapper.common.CommonMapper">
+    
+    
+    <insert id="insertBill" parameterType="map">
+        insert into IDA_CHARGE_BILL values (
+        sys_guid(), #{month}, #{filename}, #{username}, sysdate, #{bak}
+        )
+    </insert>
+
+    <insert id="insertBillRecord" parameterType="map">
+        insert into ida_import_record values (
+        sys_guid(), #{month}, #{filename}, #{username}, sysdate
+        )
+    </insert>
+    <update id="updateBill" parameterType="map">
+        update ida_charge_bill t
+        <set>
+            <if test="filename != null">
+                t.name = #{filename},
+            </if>
+            <if test="username != null">
+                t.IMPORT_USERNAME = #{username},
+            </if>
+            <if test="1 == 1">
+                t.IMPORT_TIME = sysdate,
+            </if>
+            <if test="bak != null">
+                t.REMARK = #{bak},
+            </if>
+        </set>
+        where month = #{month}
+    </update>
+
+
+    <insert id="insertBillDetail" parameterType="List">
+
+    </insert>
+</mapper>
